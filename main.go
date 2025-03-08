@@ -42,5 +42,5 @@ func main(){
 	r.POST("/hub", handleNotification)
 	r.POST("/subscribe", handleSubscribe)
 
-	r.Run()
+	r.Run(":8080")
 }
