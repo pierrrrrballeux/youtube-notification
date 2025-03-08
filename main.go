@@ -37,6 +37,7 @@ func handleSubscribe(c *gin.Context){
 func main(){
 	r := gin.Default()
 
+	r.GET("/", func(ctx *gin.Context) { ctx.String(200, "Hello World!!!") })
 	r.GET("/hub", handleCallback)
 	r.POST("/hub", handleNotification)
 	r.POST("/subscribe", handleSubscribe)
