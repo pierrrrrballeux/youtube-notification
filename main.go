@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/xml"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -26,7 +27,7 @@ func handleNotification(c *gin.Context){
 		log.Println(err)
 	}
 
-	log.Printf("%sが\n「%s」をアップロードしました!!!\n", result.Author.Name,result.Title)
+	fmt.Println("%sが\n「%s」をアップロードしました!!!\n", result.Author.Name,result.Title)
 
 	c.String(200, "success")
 	return
@@ -36,7 +37,7 @@ func handleSubscribe(c *gin.Context){
 	_, err := http.Post("https://pubsubhubbub.appspot.com/", "application/x-www-form-urlencoded", nil)
 
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return 
 	}
 

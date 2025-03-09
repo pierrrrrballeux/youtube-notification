@@ -4,6 +4,11 @@ import (
 	"encoding/xml"
 )
 
+type Channel struct {
+	id string `json:id`
+	secret string `json:secret`
+}
+
 type Feed struct {
 	XMLName xml.Name `xml:"feed"`
 	Text    string   `xml:",chardata"`
