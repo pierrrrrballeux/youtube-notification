@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/xml"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -18,16 +17,16 @@ func handleCallback(c *gin.Context){
 
 func handleNotification(c *gin.Context){
 	body := c.Request.Body
-	defer body.Close()
 
-	result := Feed{};
+	result := YoutubeFeed{};
 	err := xml.NewDecoder(body).Decode(&result)
 	
 	if err != nil {
 		log.Println(err)
+		return
 	}
 
-	fmt.Println("%sが\n「%s」をアップロードしました!!!\n", result.Author.Name,result.Title)
+	log.Printf("%sが\n「%s」をアップロードしました!!!\n", result.Author.Name,result.Title)
 
 	c.String(200, "success")
 	return
@@ -37,7 +36,7 @@ func handleSubscribe(c *gin.Context){
 	_, err := http.Post("https://pubsubhubbub.appspot.com/", "application/x-www-form-urlencoded", nil)
 
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return 
 	}
 
@@ -45,7 +44,6 @@ func handleSubscribe(c *gin.Context){
 }
 
 func main(){
-	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 
 	r.GET("/", func(ctx *gin.Context) { ctx.String(200, "Hello World!!!") })

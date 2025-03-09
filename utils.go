@@ -16,6 +16,6 @@ func GetHMACSecret() string {
 	return hex.EncodeToString(bytes)
 }
 
-func send_webhook(data Feed){
+func send_webhook(data YoutubeFeed){
 	
 }

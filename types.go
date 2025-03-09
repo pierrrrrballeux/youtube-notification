@@ -9,75 +9,69 @@ type Channel struct {
 	secret string `json:secret`
 }
 
-type Feed struct {
-	XMLName xml.Name `xml:"feed"`
-	Text    string   `xml:",chardata"`
-	Yt      string   `xml:"yt,attr"`
-	Media   string   `xml:"media,attr"`
-	Xmlns   string   `xml:"xmlns,attr"`
-	Link    []struct {
-		Text string `xml:",chardata"`
-		Rel  string `xml:"rel,attr"`
-		Href string `xml:"href,attr"`
-	} `xml:"link"`
-	ID        string `xml:"id"`
-	ChannelId string `xml:"channelId"`
-	Title     string `xml:"title"`
-	Author    struct {
-		Text string `xml:",chardata"`
-		Name string `xml:"name"`
-		URI  string `xml:"uri"`
-	} `xml:"author"`
-	Published string `xml:"published"`
-	Entry     struct {
-		Text      string `xml:",chardata"`
-		ID        string `xml:"id"`
-		VideoId   string `xml:"videoId"`
-		ChannelId string `xml:"channelId"`
-		Title     string `xml:"title"`
-		Link      struct {
-			Text string `xml:",chardata"`
-			Rel  string `xml:"rel,attr"`
-			Href string `xml:"href,attr"`
-		} `xml:"link"`
-		Author struct {
-			Text string `xml:",chardata"`
-			Name string `xml:"name"`
-			URI  string `xml:"uri"`
-		} `xml:"author"`
-		Published string `xml:"published"`
-		Updated   string `xml:"updated"`
-		Group     struct {
-			Text    string `xml:",chardata"`
-			Title   string `xml:"title"`
-			Content struct {
-				Text   string `xml:",chardata"`
-				URL    string `xml:"url,attr"`
-				Type   string `xml:"type,attr"`
-				Width  string `xml:"width,attr"`
-				Height string `xml:"height,attr"`
-			} `xml:"content"`
-			Thumbnail struct {
-				Text   string `xml:",chardata"`
-				URL    string `xml:"url,attr"`
-				Width  string `xml:"width,attr"`
-				Height string `xml:"height,attr"`
-			} `xml:"thumbnail"`
-			Description string `xml:"description"`
-			Community   struct {
-				Text       string `xml:",chardata"`
-				StarRating struct {
-					Text    string `xml:",chardata"`
-					Count   string `xml:"count,attr"`
-					Average string `xml:"average,attr"`
-					Min     string `xml:"min,attr"`
-					Max     string `xml:"max,attr"`
-				} `xml:"starRating"`
-				Statistics struct {
-					Text  string `xml:",chardata"`
-					Views string `xml:"views,attr"`
-				} `xml:"statistics"`
-			} `xml:"community"`
-		} `xml:"group"`
-	} `xml:"entry"`
-} 
+type YoutubeFeed struct {
+	XMLName    xml.Name `xml:"http://www.w3.org/2005/Atom feed"`
+	Namespace  string   `xml:"xmlns:yt,attr"`
+	Namespace2 string   `xml:"xmlns:media,attr"`
+	ID         string   `xml:"id"`
+	ChannelID  string   `xml:"yt:channelId"`
+	Title      string   `xml:"title"`
+	Link       string   `xml:"link"`
+	Author     Author   `xml:"author"`
+	Published  string   `xml:"published"`
+	Entries    []Entry  `xml:"entry"`
+}
+
+type Author struct {
+	Name string `xml:"name"`
+	URI  string `xml:"uri"`
+}
+
+type Entry struct {
+	ID         string       `xml:"id"`
+	VideoID    string       `xml:"yt:videoId"`
+	ChannelID  string       `xml:"yt:channelId"`
+	Title      string       `xml:"title"`
+	Link       string       `xml:"link"`
+	Author     Author       `xml:"author"`
+	Published  string       `xml:"published"`
+	Updated    string       `xml:"updated"`
+	MediaGroup MediaGroup   `xml:"media:group"`
+}
+
+type MediaGroup struct {
+	MediaTitle   string          `xml:"media:title"`
+	MediaContent MediaContent    `xml:"media:content"`
+	Thumbnail    MediaThumbnail  `xml:"media:thumbnail"`
+	Description  string          `xml:"media:description"`
+	Community    MediaCommunity  `xml:"media:community"`
+}
+
+type MediaContent struct {
+	URL    string `xml:"url,attr"`
+	Type   string `xml:"type,attr"`
+	Width  int    `xml:"width,attr"`
+	Height int    `xml:"height,attr"`
+}
+
+type MediaThumbnail struct {
+	URL    string `xml:"url,attr"`
+	Width  int    `xml:"width,attr"`
+	Height int    `xml:"height,attr"`
+}
+
+type MediaCommunity struct {
+	StarRating  MediaStarRating `xml:"media:starRating"`
+	Statistics  MediaStatistics `xml:"media:statistics"`
+}
+
+type MediaStarRating struct {
+	Count   int     `xml:"count,attr"`
+	Average float64 `xml:"average,attr"`
+	Min     int     `xml:"min,attr"`
+	Max     int     `xml:"max,attr"`
+}
+
+type MediaStatistics struct {
+	Views int `xml:"views,attr"`
+}
