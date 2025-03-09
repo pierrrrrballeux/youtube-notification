@@ -26,7 +26,7 @@ func handleNotification(c *gin.Context){
 		return
 	}
 
-	log.Printf("%sが\n「%s」をアップロードしました!!!\n", result.Author.Name,result.Title)
+	log.Printf("%sが\n「%s」をアップロードしました!!!\n", result.Entries[0].Author.Name,result.Entries[0].Link)
 
 	c.String(200, "success")
 	return
