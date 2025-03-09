@@ -1,55 +1,54 @@
 package main
 
 import (
-	"encoding/xml"
+	"fmt"
 	"log"
-	"net/http"
-
-	"github.com/gin-gonic/gin"
+	"os"
+	"os/signal"
+	
+	"github.com/bwmarrin/discordgo"
+	"github.com/joho/godotenv"
 )
 
-func handleCallback(c *gin.Context){
-	challenge, _ := c.GetQuery("hub.challenge")
-	log.Printf("Challenge: %s\n", challenge)
-	c.String(200, challenge)
-	return
-}
+var (
+	ch = make(chan string)
+)
 
-func handleNotification(c *gin.Context){
-	body := c.Request.Body
-
-	result := YoutubeFeed{};
-	err := xml.NewDecoder(body).Decode(&result)
-	
-	if err != nil {
-		log.Println(err)
+func main(){
+	if err := godotenv.Load(); err != nil {
+		log.Fatalln(err)
 		return
 	}
-
-	log.Printf("%sが\n「%s」をアップロードしました!!!\n", result.Entries[0].Author.Name,result.Entries[0].Link)
-
-	c.String(200, "success")
-	return
-}
-
-func handleSubscribe(c *gin.Context){
-	_, err := http.Post("https://pubsubhubbub.appspot.com/", "application/x-www-form-urlencoded", nil)
-
+	
+	session, err := discordgo.New("Bot " + os.Getenv("Token"))
+	
 	if err != nil {
-		log.Println(err)
+		log.Fatalln(err)
 		return 
 	}
 
-	return
-}
+	session.AddHandler(handleReady)
 
-func main(){
-	r := gin.Default()
+	go serve()
+	go func(){
+		select {
+		case result := <-ch:
+			fmt.Println(result)
+		}
+	}()
+	go func ()  {
+		if err = session.Open(); err != nil {
+			log.Fatalln(err)
+			return
+		}	
+	}()
 
-	r.GET("/", func(ctx *gin.Context) { ctx.String(200, "Hello World!!!") })
-	r.GET("/hub", handleCallback)
-	r.POST("/hub", handleNotification)
-	r.POST("/subscribe", handleSubscribe)
+	sigch := make(chan os.Signal, 1)
+	signal.Notify(sigch, os.Interrupt)
+	<-sigch
 
-	r.Run(":8080")
+	err = session.Close()
+	if err != nil {
+		log.Printf("could not close session gracefully: %s", err)
+	}
 }
